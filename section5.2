@@ -1,0 +1,29 @@
+5.2.  File Layout
+
+   YANG modules and submodules are typically stored in files, one
+   "module" or "submodule" statement per file.  The name of the file
+   SHOULD be of the form:
+
+   YANG的模块和子模块通常存放在文件中，一个文件定义一个"module"或者"submodule"。
+   文件名应该被定义成以下的格式：
+
+     module-or-submodule-name ['@' revision-date] ( '.yang' / '.yin' )
+
+   "module-or-submodule-name" is the name of the module or submodule,
+   and the optional "revision-date" is the latest revision of the module
+   or submodule, as defined by the "revision" statement (Section 7.1.9).
+
+   "module-or-submodule-name"是模块或者子模块的名称，可选项"revision-date"是
+   这个模块或者子模块最后一次修正的时间，在"revision"声明(7.1.9中介)中被定义。
+
+   The file extension ".yang" denotes that the contents of the file are
+   written with YANG syntax (Section 6), and ".yin" denotes that the
+   contents of the file are written with YIN syntax (Section 13).
+
+   文件扩展名".yang"标识文件的内容是使用YANG语法(6章节)书写，".yin"表示
+   文件的内容是用YIN语法(13章节)书写的。
+
+   YANG parsers can find imported modules and included submodules via
+   this convention.
+
+   YANG解释器可以通过这个约定找到被import的模块和被include的子模块。
