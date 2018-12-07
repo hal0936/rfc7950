@@ -1,0 +1,21 @@
+5.4.  Resolving Grouping, Type, and Identity Names
+
+   Grouping, type, and identity names are resolved in the context in
+   which they are defined, rather than the context in which they are
+   used.  Users of groupings, typedefs, and identities are not required
+   to import modules or include submodules to satisfy all references
+   made by the original definition.  This behaves like static scoping in
+   a conventional programming language.
+
+   组，类型，和标识的名称在它们被定义的上下文中已经被处理，而不是在它们被使用的上下文。
+   组，类型定义，以及标识的使用者不需要导入模块或者包含子模块，使所有引用满足它们的原始定义。
+   这种行为类似传统程序语言中的静态域。
+
+   For example, if a module defines a grouping in which a type is
+   referenced, when the grouping is used in a second module, the type is
+   resolved in the context of the original module, not the second
+   module.  There is no ambiguity if both modules define the type.
+
+   例如，如果一个模块定义了一个组，在组里引用了一个类型，当这个组被另一个模块使用时，
+   type会在原始模块的上下文中被处理，而不是第二个模块。就不会出现是否两个模块
+   都定义了这个类型的歧义。
