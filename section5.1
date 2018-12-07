@@ -1,0 +1,225 @@
+5.  Language Concepts
+
+5.1.  Modules and Submodules
+
+   The module is the base unit of definition in YANG.  A module defines
+   a single data model.  A module can also augment an existing data
+   model with additional nodes.
+
+   磨矿是YANG定义的基本单元。一个模块定义一个独立的数据模型。一个模块
+   还可以以添加节点的方式扩充一个已有的数据模型。
+
+   Submodules are partial modules that contribute definitions to a
+   module.  A module may include any number of submodules, but each
+   submodule may belong to only one module.
+
+   子模块是模块的一本分，定义了部分模块的定义。一个模块可以包含任意多个子模块，
+   但是每个子模块只能属于一个模块。
+
+   Developers of YANG modules and submodules are RECOMMENDED to choose
+   names for their modules that will have a low probability of colliding
+   with standard or other enterprise modules, e.g., by using the
+   enterprise or organization name as a prefix for the module name.
+   Within a server, all module names MUST be unique.
+
+   建议YANG模块和子模块的开发者们，给他们的模块指定一个小概率与基本模块
+   或者其他企业模块重名的名称，比如，使用企业或者组织的名称作为前缀。
+   在一个服务中，所有的模块名必须是唯一的。
+
+   A module uses the "include" statement to list all its submodules.  A
+   module, or submodule belonging to that module, can reference
+   definitions in the module and all submodules included by the module.
+
+   模块使用"include"声明列出它的所有子模块。一个模块或者子模块属于一个模块，
+   就可以引用这个模块以及这个模块的子模块里的所有声明。
+
+   A module or submodule uses the "import" statement to reference
+   external modules.  Statements in the module or submodule can
+   reference definitions in the external module using the prefix
+   specified in the "import" statement.
+
+   模块或者子模块使用"import"声明引用一个外部模块。使用import声明的模块或者
+   子模块可以使用前缀指定引用外部模块的定义。
+
+   For backward compatibility with YANG version 1, a submodule MAY use
+   the "include" statement to reference other submodules within its
+   module, but this is not necessary in YANG version 1.1.  A submodule
+   can reference any definition in the module it belongs to and in all
+   submodules included by the module.  A submodule MUST NOT include
+   different revisions of other submodules than the revisions that its
+   module includes.
+
+   为了兼容YANG 1.0版本，子模块可以使用"include"声明去引用一个和它在同一个模块里的
+   另一个子模块，但是在YANG 1.1版本中不再需要。一个子模块可以引用任何一个
+   他所在的模块以及这个模块子模块中的所有定义。子模块与它所在的模块不允许同时include
+   来自某个子模块的不同修改。
+
+   A module or submodule MUST NOT include submodules from other modules,
+   and a submodule MUST NOT import its own module.
+
+   模块或者子模块不能include其他模块的子模块，并且子模块不能import它所在的模块。
+
+   The "import" and "include" statements are used to make definitions
+   available from other modules:
+
+   "import"和"include"声明是用来使其他模块的声明生效。
+
+   o  For a module or submodule to reference definitions in an external
+      module, the external module MUST be imported.
+
+      一个模块或者子模块想要引用一个外部模块的声明，这个外部模块必须被import。
+
+   o  A module MUST include all its submodules.
+
+      一个模块必须include它的所有子模块。
+
+   o  A module, or submodule belonging to that module, MAY reference
+      definitions in the module and all submodules included by the
+      module.
+
+      一个模块，或者附属于这个模块的子模块，可以引用这个模块或者include在
+      这个模块中的子模块的所有定义。
+
+   There MUST NOT be any circular chains of imports.  For example, if
+   module "a" imports module "b", "b" cannot import "a".
+
+   不允许出现重复import。例如，如果模块"a" import了模块"b"，"b"就不能import "a"了。
+
+   When a definition in an external module is referenced, a locally
+   defined prefix MUST be used, followed by a colon (":") and then the
+   external identifier.  References to definitions in the local module
+   MAY use the prefix notation.  Since built-in data types do not belong
+   to any module and have no prefix, references to built-in data types
+   (e.g., int32) cannot use the prefix notation.  The syntax for a
+   reference to a definition is formally defined by the rule
+   "identifier-ref" in Section 14.
+
+   如果引用了一个外部模块的的定义，本地定义的必须使用前缀，本地声明写在冒号之后，
+   冒号写在外部标识符之后。引用本地声明也可以使用前缀标识符。由于内置类型不隶属于
+   任何模块并且没有前缀，引用内置数据类型(例如，int32)不可以使用前缀标识符。
+   引用一个定义的语法在14章节由"indentifier-ref"正式定义。
+
+5.1.1.  Import and Include by Revision
+
+   Published modules evolve independently over time.  In order to allow
+   for this evolution, modules can be imported using specific revisions.
+   Initially, a module imports the revisions of other modules that are
+   current when the module is written.  As future revisions of the
+   imported modules are published, the importing module is unaffected
+   and its contents are unchanged.  When the author of the module is
+   prepared to move to the most recently published revision of an
+   imported module, the module is republished with an updated "import"
+   statement.  By republishing with the new revision, the authors
+   explicitly indicate their acceptance of any changes in the imported
+   module.
+
+   被发布的模块随着时间推移独立的发展。为了适应这些发展，模块会被以指定修正版本
+   的方式被import。最初，一个模块import的是其他模块当时的修正后的发布版本，使用import
+   的模块本身实现不会受影响并且它的内容不会被改变。当被import的模块的作者准备把修正
+   更新到发布版本，这个模块会以一个新的import声明的方式发布。当发布一个新的修正，
+   作者们清新的了解到他们接受被import模块的所有修改。
+
+   For submodules, the issue is related but simpler.  A module or
+   submodule that includes submodules may specify the revision of the
+   included submodules.  If a submodule changes, any module or submodule
+   that includes it by revision needs to be updated to reference the new
+   revision.
+
+   对于子模块，也有相关的问题但是会比较简单。一个模块或者子模块会以指定模块修正版本
+   的方式include子模块。当一个子模块发生变化，include它的修正的那些模块或者子模块
+   需要更新以便医用新的修正。
+
+   For example, module "b" imports module "a".
+   例如，模块"b" import 模块"a"。
+
+     module a {
+       yang-version 1.1;
+       namespace "urn:example:a";
+       prefix "a";
+
+       revision 2008-01-01 { ... }
+       grouping a {
+         leaf eh { .... }
+       }
+     }
+
+     module b {
+       yang-version 1.1;
+       namespace "urn:example:b";
+       prefix "b";
+
+       import a {
+         prefix "p";
+         revision-date 2008-01-01;
+       }
+
+       container bee {
+         uses p:a;
+       }
+     }
+
+   When the author of "a" publishes a new revision, the changes may not
+   be acceptable to the author of "b".  If the new revision is
+   acceptable, the author of "b" can republish with an updated revision
+   in the "import" statement.
+
+   当"a"的作者发布一个新的修正，这个改动可能不被"b"的作者所接受。
+   如果新的修正被接受，"b"的作者可以在import声明中重新发布一个被更新的修正。
+
+   If a module is not imported with a specific revision, it is undefined
+   which revision is used.
+
+   如果一个模块被import时没有被指定一个修正，就不会定义是哪个修正被使用了。
+
+5.1.2.  Module Hierarchies
+
+   YANG allows modeling of data in multiple hierarchies, where data may
+   have more than one top-level node.  Each top-level data node in a
+   module defines a separate hierarchy.  Models that have multiple
+   top-level nodes are sometimes convenient and are supported by YANG.
+
+   YANG允许对数据进行多个等级的建模，这样数据会有多于1个的顶层节点。
+   模块中的每一个顶层节点定义了各定义了一个隔离的层级。
+
+5.1.2.1.  NETCONF XML Encoding
+
+   NETCONF is capable of carrying any XML content as the payload in the
+   <config> and <data> elements.  The top-level nodes of YANG modules
+   are encoded as child elements, in any order, within these elements.
+   This encapsulation guarantees that the corresponding NETCONF messages
+   are always well-formed XML documents.
+
+   NETCONF可以在<config>和<data>元素中携带任何内容作为有效负载。YANG模块会把这些元素
+   作为子元素以任意顺序编码成顶层节点。这样的封装保证了相应的NETCONF消息在XML文件中
+   总是能有一个良好的格式。
+
+   For example, an instance of:
+
+     module example-config {
+       yang-version 1.1;
+       namespace "urn:example:config";
+       prefix "co";
+
+       container system { ... }
+       container routing { ... }
+     }
+
+   could be encoded in NETCONF as:
+
+     <rpc message-id="101"
+          xmlns="urn:ietf:params:xml:ns:netconf:base:1.0"
+          xmlns:nc="urn:ietf:params:xml:ns:netconf:base:1.0">
+       <edit-config>
+         <target>
+           <running/>
+         </target>
+         <config>
+           <system xmlns="urn:example:config">
+             <!-- system data here -->
+           </system>
+           <routing xmlns="urn:example:config">
+             <!-- routing data here -->
+           </routing>
+         </config>
+       </edit-config>
+     </rpc>
