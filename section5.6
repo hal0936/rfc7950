@@ -1,0 +1,374 @@
+5.6.  Conformance
+
+      一致性
+
+   Conformance to a model is a measure of how accurately a server
+   follows the model.  Generally speaking, servers are responsible for
+   implementing the model faithfully, allowing applications to treat
+   servers that implement the model identically.  Deviations from the
+   model can reduce the utility of the model and increase the fragility
+   of applications that use it.
+
+   一个模型的一致性是值一个服务器遵循这个模型的程度。通俗地说，服务就是负责
+   如实地实现一个模型，如果多个服务都实现这个模型，那么每一个服务都允许应用程序
+   用相同的方法去对待。服务对模型实现的偏差会减弱模型的通用性并且增加使用
+   这个服务的应用程序的脆弱性。
+
+   YANG modelers have three mechanisms for conformance:
+
+   YANG的建模者有是三个机制去保证其一致性。
+
+   o  the basic behavior of the model
+   
+      模型的基础行为
+
+   o  optional features that are part of the model
+
+      可选的特征称为模型的一部分
+
+   o  deviations from the model
+
+      模型的差异性
+
+   We will consider each of these in sequence.
+
+   我们认为按顺序考虑以上机制。
+
+5.6.1.  Basic Behavior
+
+        基本行为
+
+   The model defines a contract between a YANG-based client and server;
+   this contract allows both parties to have faith that the other knows
+   the syntax and semantics behind the modeled data.  The strength of
+   YANG lies in the strength of this contract.
+
+   这个模型为基于YANG的客户端和服务器制定了一个约定；这些约定允许了客户端们
+   和服务器端们达成一个共识，认为对端都能理解那些对数据建模的语法和语义。
+   YANG的健壮性依赖于这个约定的健壮性。
+
+5.6.2.  Optional Features
+	
+	可选的特征
+
+   In many models, the modeler will allow sections of the model to be
+   conditional.  The server controls whether these conditional portions
+   of the model are supported or valid for that particular server.
+
+   在许多模型中，模型的构建者允许模型的某些特性满足某些条件时开启。
+   具体实现的服务控制在本服务中这些条件限制的特性是否被支持。
+
+   For example, a syslog data model may choose to include the ability to
+   save logs locally, but the modeler will realize that this is only
+   possible if the server has local storage.  If there is no local
+   storage, an application should not tell the server to save logs.
+
+   例如，系统日志模型可以选择支持日志的本地存储，但是建模者会意识到只有在
+   服务具有本地存储时才可能实现这个特性。如果没有本地存储，应用程序不会让
+   系统日志服务存储日志。
+
+   YANG supports this conditional mechanism using a construct called
+   "feature".  Features give the modeler a mechanism for making portions
+   of the module conditional in a manner that is controlled by the
+   server.  The model can express constructs that are not universally
+   present in all servers.  These features are included in the model
+   definition, allowing a consistent view and allowing applications to
+   learn which features are supported and tailor their behavior to the
+   server.
+
+   YANG以"feature"("特性")的概念支持这种条件机制。特性向建模者提供了一个机制，
+   允许建模者在行为上添加大量由server控制的模块条件。模块可以描述一些在目前
+   实现中没有被广泛实现的概念。这些特性包含在模型定义中，实现了统一的观念并且
+   允许应用程序实现服务是选择支持那些特性以及裁剪它们的行为。
+
+5.6.3.  Deviations
+
+        差异
+
+   In an ideal world, all servers would be required to implement the
+   model exactly as defined, and deviations from the model would not be
+   allowed.  But in the real world, servers are often not able or
+   designed to implement the model as written.  For YANG-based
+   automation to deal with these server deviations, a mechanism must
+   exist for servers to inform applications of the specifics of such
+   deviations.
+
+   在理想世界，要求所有服务的实现完全符合定义，不允许实现与模型之间存在差异。
+   但是在现实世界中，服务实现通常不能完全符合模型的描述或者被设计成与模型有差异。
+   为了使基于YANG的实现能够自动地处理这些服务实现的差异，服务中必须存在一个机制
+   指出这个应用实现中的差异。
+
+   For example, a BGP module may allow any number of BGP peers, but a
+   particular server may only support 16 BGP peers.  Any application
+   configuring the 17th peer will receive an error.  While an error may
+   suffice to let the application know it cannot add another peer, it
+   would be far better if the application had prior knowledge of this
+   limitation and could prevent the user from starting down the path
+   that could not succeed.
+
+   例如，一个BGP模块可以允许任意数量的BGP对，但是某个服务可能只允许16对。
+   任何应用程序配置第17对时会收到一个错误。这个错误信息应该足以让应用程序知道
+   不能再配置更多对，这比应用程序对BGP对数限制停留在原有认识的情况好得多。
+   而且这可以避免用户在这种错误的使用方式下浪费更多时间。
+
+   Server deviations are declared using the "deviation" statement, which
+   takes as its argument a string that identifies a node in the schema
+   tree.  The contents of the statement detail the manner in which the
+   server implementation deviates from the contract as defined in the
+   module.
+
+   服务的差异使用"devisation"定义，这个定义以一个字符串作为其表现形式，字符串以
+   模式树的方式作为一个标识符。这个声明的内容详细描述了这个模块中，
+   服务实现与预定之间的差异。
+
+   Further details are available in Section 7.20.3.
+
+   更多细节在7.20.3章节中给出。
+
+
+5.6.4.  Announcing Conformance Information in NETCONF
+
+        NETCONF中的一致性信息通告
+
+   This document defines the following mechanism for announcing
+   conformance information.  Other mechanisms may be defined by future
+   specifications.
+
+   这个文档定义了定义一致性信息的机制。其他信息在未来的说明书中会被定义。
+
+   A NETCONF server MUST announce the modules it implements (see
+   Section 5.6.5) by implementing the YANG module "ietf-yang-library"
+   defined in [RFC7895] and listing all implemented modules in the
+   "/modules-state/module" list.
+
+   一个NETCONF服务必须使用"ietf-yang-library"通告它实例化的YANG模块，
+   并且在"ietf-yang-library"中列出被它实例化的模块。
+   "ietf-yang-library"定义在[RFC7895]中，
+
+   The server also MUST advertise the following capability in the
+   <hello> message (line breaks and whitespaces are used for formatting
+   reasons only):
+
+   服务还必须在欢迎信息中通知以下的信息(换行和空行只是因为格式而存在)：
+
+     urn:ietf:params:netconf:capability:yang-library:1.0?
+       revision=<date>&module-set-id=<id>
+
+   The parameter "revision" has the same value as the revision date of
+   the "ietf-yang-library" module implemented by the server.  This
+   parameter MUST be present.
+
+   参量"revision"的值和"ietf-yang-libary"模块被服务实例化的时间是一样的。
+   这个参量必须给出。
+
+   The parameter "module-set-id" has the same value as the leaf
+   "/modules-state/module-set-id" from "ietf-yang-library".  This
+   parameter MUST be present.
+
+   参量"module-set-id"的值和"ietf-yang-library"的叶子节点"/modules-state/module-set-id"
+   的值相同。这个参量必须给出。
+
+   With this mechanism, a client can cache the supported modules for a
+   server and only update the cache if the "module-set-id" value in the
+   <hello> message changes.
+
+   这种个机制下，一个客户端可以对服务端支持的模块进行缓存，只有当欢迎信息中的"module-set-id"值
+   发生改变时才去更新缓存。
+
+5.6.5.  Implementing a Module
+
+        实例化一个模块
+
+   A server implements a module if it implements the module's data
+   nodes, RPCs, actions, notifications, and deviations.
+
+   一个服务实例化一个模块，指的是这个服务实例化了这个模块的
+   数据节点，RPC，动作，通知，以及差异。
+
+   A server MUST NOT implement more than one revision of a module.
+
+   对于有多个修正的模块，一个服务只能实例化一个修改。
+
+   If a server implements a module A that imports a module B, and A uses
+   any node from B in an "augment" or "path" statement that the server
+   supports, then the server MUST implement a revision of module B that
+   has these nodes defined.  This is regardless of whether module B is
+   imported by revision or not.
+
+   如果一个服务实例化的模块A，模块A中引入了另一个模块B，而且A中以"augment"或者
+   "path"声明使用了B模块中的节点，这个服务支持了这个节点，这时服务必须实例化一个
+   包含那些节点的定义的B模块的修正版本。无论模块B是否被import到这个修正版本上。
+
+   If a server implements a module A that imports a module C without
+   specifying the revision date of module C and the server does not
+   implement C (e.g., if C only defines some typedefs), the server MUST
+   list module C in the "/modules-state/module" list from
+   "ietf-yang-library" [RFC7895], and it MUST set the leaf
+   "conformance-type" to "import" for this module.
+
+   如果一个服务实例化了模块A，模块A引入了模块C同时并没指定是模块C的修正版本，
+   而且服务并没有实例化模块C(例如，模块C仅仅定义了一个类型定义)，服务必须从
+   "ietf-yang-library"把模块C列入"/modules-state/module"列表中，同时必须在这个模块中
+   把"conformance-type"叶子节点设为"import"。
+
+   If a server lists a module C in the "/modules-state/module" list from
+   "ietf-yang-library" and there are other modules Ms listed that import
+   C without specifying the revision date of module C, the server MUST
+   use the definitions from the most recent revision of C listed for
+   modules Ms.
+
+   如果一个服务把模块C从"ietf-yang-library"列入"/modules-state/module"列表并且其他模块比如
+   模块Ms也被列入了，这时引入C但不指定它的修正时间，服务使用C的某个修正里的定义，
+   这个修正一定取的是时间和模块Ms的修正时间最接近的那个。
+
+   The reason for these rules is that clients need to be able to know
+   the specific data model structure and types of all leafs and
+   leaf-lists implemented in a server.
+
+   这些规定的原因是，客户端需要确切的知道服务器端的数据模型结构和所有叶子节点的类型，
+   以及叶子列表。
+
+   For example, with these modules:
+
+     module a {
+       yang-version 1.1;
+       namespace "urn:example:a";
+       prefix "a";
+
+       import b {
+         revision-date 2015-01-01;
+       }
+       import c;
+
+       revision 2015-01-01;
+
+       feature foo;
+
+       augment "/b:x" {
+         if-feature foo;
+
+         leaf y {
+           type b:myenum;
+         }
+       }
+
+       container a {
+         leaf x {
+           type c:bar;
+         }
+       }
+     }
+
+     module b {
+       yang-version 1.1;
+       namespace "urn:example:b";
+       prefix "b";
+
+       revision 2015-01-01;
+
+       typedef myenum {
+         type enumeration {
+           enum zero;
+         }
+       }
+
+       container x {
+       }
+     }
+
+     module b {
+       yang-version 1.1;
+       namespace "urn:example:b";
+       prefix "b";
+
+       revision 2015-04-04;
+       revision 2015-01-01;
+
+       typedef myenum {
+         type enumeration {
+           enum zero; // added in 2015-01-01
+           enum one;  // added in 2015-04-04
+         }
+       }
+
+       container x {  // added in 2015-01-01
+         container y; // added in 2015-04-04
+       }
+     }
+
+     module c {
+       yang-version 1.1;
+       namespace "urn:example:c";
+       prefix "c";
+
+       revision 2015-02-02;
+
+       typedef bar {
+         ...
+       }
+     }
+
+
+     module c {
+       yang-version 1.1;
+       namespace "urn:example:c";
+       prefix "c";
+
+       revision 2015-03-03;
+       revision 2015-02-02;
+
+       typedef bar {
+         ...
+       }
+     }
+
+   A server that implements revision "2015-01-01" of module "a" and
+   supports feature "foo" can implement revision "2015-01-01" or
+   "2015-04-04" of module "b".  Since "b" was imported by revision, the
+   type of leaf "/b:x/a:y" is the same, regardless of which revision of
+   "b" the server implements.
+
+   一个服务实例化模块"a"的"2015-01-01"修正，并且支持的特性"foo"可以是
+   "2015-01-01"修正或者b模块的"2015-04-04"修正。这是由于"b"是以修正的形式被引入，
+   丙炔两个修正版本的叶子节点"/b:x/a:y"是相同的，忽略掉服务实例化中的其他"b"中的修正。
+
+   A server that implements module "a" but does not support feature
+   "foo" does not have to implement module "b".
+
+   如果一个服务实例化"a"但是不支持"foo"特性，它不被强制要求实例化模块"b"。
+
+   A server that implements revision "2015-01-01" of module "a"
+   picks any revision of module "c" and lists it in the
+   "/modules-state/module" list from "ietf-yang-library".
+
+   一个服务实例化"a"模块的"2015-01-01"修正，需要把所有"c"模块的修正
+   从"ietf-yang-library"摘出并列入"/modules-state/module"列表。
+
+   The following XML encoding example shows valid data for the
+   "/modules-state/module" list for a server that implements module "a":
+
+   下面的XML编码展示了一个服务实例化模块"a"的"/modules-state/module"列表中可用的数据：
+
+     <modules-state
+         xmlns="urn:ietf:params:xml:ns:yang:ietf-yang-library">
+       <module-set-id>ee1ecb017370cafd</module-set-id>
+       <module>
+         <name>a</name>
+         <revision>2015-01-01</revision>
+         <namespace>urn:example:a</namespace>
+         <feature>foo</feature>
+         <conformance-type>implement</conformance-type>
+       </module>
+       <module>
+         <name>b</name>
+         <revision>2015-04-04</revision>
+         <namespace>urn:example:b</namespace>
+         <conformance-type>implement</conformance-type>
+       </module>
+       <module>
+         <name>c</name>
+         <revision>2015-02-02</revision>
+         <namespace>urn:example:c</namespace>
+         <conformance-type>import</conformance-type>
+       </module>
+     </modules-state>
